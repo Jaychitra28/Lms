@@ -1,25 +1,37 @@
 from django.test import TestCase
 from django.urls import reverse
 from tests.courses.test_model_mixin import Modelmixin
-from courses.models import Subject, Course, Module
-from django.shortcuts import redirect
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import Permission, User
 
 
 class TestListView(Modelmixin, TestCase):
-    def test_course_list_tamplate_used(self):
-        permission = Permission.objects.get(name="Can view course")
-        self.user.user_permissions.add(permission)
-        self.client.login(username="jai", password="123")
+    def test_course_list_view_redirects_to_login_page(self):
         response = self.client.get((reverse("course:manage_course_list")))
+        self.assertRedirects(response, "/accounts/login/?next=/course/mine/")
+
+    def test_course_list_template_used(self):
+        self.add_permission_to_user(permission="Can view course")
+        self.client.login(username="jai", password="123")
+        response = self.client.get(reverse("course:manage_course_list"))
         self.assertTemplateUsed(response, "courses/manage/course/list.html")
 
-    def test_course_DeleteView_tamplate_used(self):
-        permission = Permission.objects.get(name="Can delete course")
-        self.user.user_permissions.add(permission)
+    def test_course_create_template_used(self):
+        self.add_permission_to_user(permission="Can add course")
+        self.client.login(username="jai", password="123")
+        response = self.client.get(reverse("course:create"))
+        self.assertTemplateUsed(response, "courses/manage/course/form.html")
+
+    def test_course_edit_template_used(self):
+        self.add_permission_to_user(permission="Can change course")
         self.client.login(username="jai", password="123")
         response = self.client.get(
-            (reverse("course:delete", args=[self.user.id]))
+            reverse("course:edit", args=[self.course1.pk])
+        )
+        self.assertTemplateUsed(response, "courses/manage/course/form.html")
+
+    def test_course_delete_template_used(self):
+        self.add_permission_to_user(permission="Can delete course")
+        self.client.login(username="jai", password="123")
+        response = self.client.get(
+            reverse("course:delete", args=[self.course1.pk])
         )
         self.assertTemplateUsed(response, "courses/manage/course/delete.html")
