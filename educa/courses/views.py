@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -7,7 +7,6 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
 )
 from .models import Course, Module
-from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.base import TemplateResponseMixin, View
 from .forms import ModuleFormSet
 
@@ -56,7 +55,6 @@ class CourseDeleteView(OwnerCourseMixin, DeleteView):
 
 class CourseModuleUpdateView(TemplateResponseMixin, View):
     template_name = "courses/manage/module/formset.html"
-    course = None
 
     def get_formset(self, data=None):
         return ModuleFormSet(instance=self.course, data=data)

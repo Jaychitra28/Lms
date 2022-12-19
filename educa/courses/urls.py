@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 
 app_name = "course"
-
 urlpatterns = [
     path(
         "mine/",
@@ -15,7 +14,7 @@ urlpatterns = [
     path(
         "<pk>/module/",
         views.CourseModuleUpdateView.as_view(),
-        name="module_update",
+        name="course_module_update",
     ),
     path(
         "module/<int:module_id>/",
