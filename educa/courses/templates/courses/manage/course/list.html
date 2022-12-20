@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}My courses{% endblock %}
@@ -15,8 +14,7 @@
           <a href="{% url "course:delete" course.id %}">Delete</a>
           <a href="{% url "course:module_update" course.id %}">Edit modules</a>
           {% if course.modules.count > 0 %}
-          <a href="{% url "course:module_content_list" course.modules.first.id %}">
-          Manage contents</a>
+          <a href="{% url "course:module_content_list" course.modules.first.id %}">Manage contents</a>
           {% endif %}
         </p>
       </div>
