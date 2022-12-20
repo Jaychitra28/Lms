@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -7,7 +7,6 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
 )
 from .models import Course, Module, Content
-from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.base import TemplateResponseMixin, View
 from .forms import ModuleFormSet
 from django.forms.models import modelform_factory
@@ -58,7 +57,6 @@ class CourseDeleteView(OwnerCourseMixin, DeleteView):
 
 class CourseModuleUpdateView(TemplateResponseMixin, View):
     template_name = "courses/manage/module/formset.html"
-    course = None
 
     def get_formset(self, data=None):
         return ModuleFormSet(instance=self.course, data=data)
@@ -140,3 +138,14 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
             return redirect("course:module_content_list", self.module.id)
 
         return self.render_to_response({"form": form, "object": self.obj})
+
+
+class ContentDeleteView(View):
+    def post(self, request, id):
+        content = get_object_or_404(
+            Content, id=id, module__course__owner=request.user
+        )
+        module = content.module
+        content.item.delete()
+        content.delete()
+        return redirect("course:module_content_list", module.id)
