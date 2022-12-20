@@ -37,4 +37,9 @@ urlpatterns = [
         views.ContentCreateUpdateView.as_view(),
         name="module_content_update",
     ),
+    path(
+        "subject/<slug:subject>/",
+        views.CourseListView.as_view(),
+        name="course_list_subject",
+    ),
 ]
